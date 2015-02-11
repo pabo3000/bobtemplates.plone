@@ -12,6 +12,11 @@
 
     <includeDependencies package="." />
 
+{{% if not plone.is_plone5 %}}
+    <!-- Zope2 initialization -->
+    <five:registerPackage package="." initialize=".initialize" />
+
+{{% endif %}}
 {{% if package.locales %}}
     <i18n:registerTranslations directory="locales" />
 
@@ -32,6 +37,14 @@
         title="{{{ package.dottedname }}}"
         directory="profiles/default"
         description="Installs the {{{ package.dottedname }}} add-on."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+    <genericsetup:registerProfile
+        name="uninstall"
+        title="{{{ package.dottedname }}} uninstall"
+        directory="profiles/uninstall"
+        description="Removes the {{{ package.dottedname }}} add-on."
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 

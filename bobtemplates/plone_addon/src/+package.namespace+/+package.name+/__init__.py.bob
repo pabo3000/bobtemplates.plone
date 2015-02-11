@@ -4,3 +4,7 @@
 from zope.i18nmessageid import MessageFactory
 
 _ = MessageFactory('{{{ package.dottedname }}}')
+
+# Required in order to run an uninstall profile thru Extensions/Install.py
+def initialize(context):
+    """Initializer called when used as a Zope 2 product."""

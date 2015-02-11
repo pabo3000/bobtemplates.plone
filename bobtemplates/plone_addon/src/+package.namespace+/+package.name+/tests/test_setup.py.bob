@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """Setup/installation tests for this package."""
+from {{{ package.dottedname }}}.interfaces import I{{{ package.browserlayer }}}
 from {{{ package.dottedname }}}.testing import {{{package.uppercasename}}}_INTEGRATION_TESTING  # noqa
 from plone import api
+from plone.app.testing import applyProfile
+from plone.browserlayer import utils
 
 import unittest2 as unittest
 
@@ -20,14 +23,102 @@ class TestInstall(unittest.TestCase):
         """Test if {{{ package.dottedname }}} is installed with portal_quickinstaller."""
         self.assertTrue(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
 
-    def test_uninstall(self):
-        """Test if {{{ package.dottedname }}} is cleanly uninstalled."""
-        self.installer.uninstallProducts(['{{{ package.dottedname }}}'])
-        self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
-
     # browserlayer.xml
     def test_browserlayer(self):
         """Test that I{{{ package.browserlayer }}} is registered."""
-        from {{{ package.dottedname }}}.interfaces import I{{{ package.browserlayer }}}
-        from plone.browserlayer import utils
         self.assertIn(I{{{ package.browserlayer }}}, utils.registered_layers())
+
+
+class TestCleanUninstall(unittest.TestCase):
+    """Test REALLY clean uninstall of {{{ package.dottedname }}} from Plone."""
+
+    layer = {{{package.uppercasename}}}_INTEGRATION_TESTING
+
+    def setUpPloneSite(self, portal):
+        pass
+
+    def setUp(self):
+        """Custom shared utility setup for tests."""
+        self.portal = self.layer['portal']
+        self.installer = api.portal.get_tool('portal_quickinstaller')
+        self.maxDiff = None
+
+    # FIXME - browser layer is not removed for some reason!?
+    def test_browserlayers_removed(self):
+        """Test if {{{ package.dottedname }}} removes browser layers on uninstall."""
+
+        initialBrowserLayers = [l.getName() for l in utils.registered_layers()]
+        
+        # Install product
+        applyProfile(self.portal, '{{{ package.dottedname }}}:default')
+        self.assertTrue(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        # self.assertIn(I{{{ package.browserlayer }}}, utils.registered_layers())
+
+        ## Uninstall
+        self.installer.uninstallProducts(['{{{ package.dottedname }}}'])
+        self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        # self.assertNotIn(I{{{ package.browserlayer }}}, utils.registered_layers())
+        
+        # Check any browser layers are unregistered
+        layers = [l.getName() for l in utils.registered_layers()]
+        self.assertEqual(layers, initialBrowserLayers)
+
+
+    def test_skins_removed(self):
+        """Test if {{{ package.dottedname }}} removes skin layers on uninstall."""
+
+        self.skinstool = api.portal.get_tool('portal_skins')
+        self.initialSkinselections = self.skinstool.getSkinSelections()
+        self.initialSkinIds = self.skinstool.objectIds()
+
+        # Install product
+        applyProfile(self.portal, '{{{ package.dottedname }}}:default')
+        self.assertTrue(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        ## Uninstall
+        self.installer.uninstallProducts(['{{{ package.dottedname }}}'])
+        self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        # Check any skins are unregistered
+        self.assertEqual(self.skinstool.getSkinSelections(), 
+                         self.initialSkinselections)
+
+        # Check any skin layers are unregistered
+        self.assertEqual(self.skinstool.objectIds(), self.initialSkinIds)
+
+
+    def test_jsregistry_removed(self):
+        """Test if {{{ package.dottedname }}} removes Javascript on uninstall."""
+
+        initialJavascriptIds = self.portal.portal_javascripts.getResourceIds()
+
+        # Install product
+        applyProfile(self.portal, '{{{ package.dottedname }}}:default')
+        self.assertTrue(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        ## Uninstall
+        self.installer.uninstallProducts(['{{{ package.dottedname }}}'])
+        self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        self.assertEqual(self.portal.portal_javascripts.getResourceIds(), 
+                         initialJavascriptIds)
+
+
+    def test_cssregistry_removed(self):
+        """Test if {{{ package.dottedname }}} removes CSS on uninstall."""
+
+        initialCssIds = self.portal.portal_css.getResourceIds()
+
+        # Install product
+        applyProfile(self.portal, '{{{ package.dottedname }}}:default')
+        self.assertTrue(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        ## Uninstall
+        self.installer.uninstallProducts(['{{{ package.dottedname }}}'])
+        self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
+
+        self.assertEqual(self.portal.portal_css.getResourceIds(), 
+                         initialCssIds)
+
