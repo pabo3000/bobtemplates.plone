@@ -63,7 +63,9 @@ class TestCleanUninstall(unittest.TestCase):
         
         # Check any browser layers are unregistered
         layers = [l.getName() for l in utils.registered_layers()]
-        self.assertEqual(layers, initialBrowserLayers)
+        self.assertEqual(layers, 
+                         initialBrowserLayers,
+                         "One or more Browser Layers were not removed")
 
 
     def test_skins_removed(self):
@@ -83,12 +85,16 @@ class TestCleanUninstall(unittest.TestCase):
 
         # Check any skins are unregistered
         self.assertEqual(self.skinstool.getSkinSelections(), 
-                         self.initialSkinselections)
+                         self.initialSkinselections,
+                         "One or more Skins were not removed")
 
         # Check any skin layers are unregistered
-        self.assertEqual(self.skinstool.objectIds(), self.initialSkinIds)
+        self.assertEqual(self.skinstool.objectIds(), 
+                         self.initialSkinIds,
+                         "One or more Skin Layers were not removed")
 
-
+    # TODO: this will probably be very different for Plone5 as it 
+    # registers Javascript differently
     def test_jsregistry_removed(self):
         """Test if {{{ package.dottedname }}} removes Javascript on uninstall."""
 
@@ -103,9 +109,12 @@ class TestCleanUninstall(unittest.TestCase):
         self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
 
         self.assertEqual(self.portal.portal_javascripts.getResourceIds(), 
-                         initialJavascriptIds)
+                         initialJavascriptIds,
+                         "One or more Javascript Resources were not removed")
 
 
+    # TODO: this will probably be very different for Plone5 as it 
+    # registers CSS differently
     def test_cssregistry_removed(self):
         """Test if {{{ package.dottedname }}} removes CSS on uninstall."""
 
@@ -120,5 +129,6 @@ class TestCleanUninstall(unittest.TestCase):
         self.assertFalse(self.installer.isProductInstalled('{{{ package.dottedname }}}'))
 
         self.assertEqual(self.portal.portal_css.getResourceIds(), 
-                         initialCssIds)
+                         initialCssIds,
+                         "One or more CSS Resources were not removed")
 
