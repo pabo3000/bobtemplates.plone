@@ -13,9 +13,8 @@ develop = .
 recipe = plone.recipe.zope2instance
 user = admin:admin
 http-address = 8080
+scripts = instance
 eggs =
-    Plone
-    Pillow
     {{{ package.dottedname }}} [test]
 
 
@@ -59,8 +58,11 @@ eggs = i18ndude
 
 
 [versions]
+{{% if not plone.is_plone5 %}}
 setuptools = 6.1
 zc.buildout = 2.2.5
+{{% endif %}}
+
 zc.recipe.egg = 2.0.1
 flake8 = 2.3.0
 i18ndude = 3.4.0
