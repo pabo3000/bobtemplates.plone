@@ -4,7 +4,10 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Change the browser layer from the camel case'd package name to
+  ``IBrowserLayer``. This is easier to remember and faster to write. The 
+  interface is prefixed by the package namespace anyways.
+  [thet]
 
 
 1.0.1 (2015-12-12)
