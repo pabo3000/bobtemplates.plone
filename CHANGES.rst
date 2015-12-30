@@ -4,7 +4,8 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Validate type name input (fixes #81).
+  [pbauer]
 
 
 1.0.1 (2015-12-12)
