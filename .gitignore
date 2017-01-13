@@ -1,13 +1,9 @@
-!src/bobtemplates
+.coverage
+.installed.cfg
 *.egg-info
 *.mo
 *.pyc
-.coverage
-.installed.cfg
-.mr.developer.cfg
-.project
-.pydevproject
-.settings/
+# dirs
 bin/
 buildout-cache/
 develop-eggs/
@@ -20,3 +16,14 @@ parts/
 src/*
 test.plone_addon/
 var/
+# files
+lib64
+pip-selfcheck.json
+# excludes
+!.coveragerc
+!.editorconfig
+!.gitattributes
+!.gitignore
+!.gitkeep
+!.travis.yml
+!bobtemplates

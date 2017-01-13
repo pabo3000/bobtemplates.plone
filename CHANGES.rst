@@ -1,13 +1,151 @@
 Changelog
 =========
 
-1.0.2 (unreleased)
+1.0.6 (unreleased)
 ------------------
 
-- Update robot test framework versions including Selenium to work with recent
-  firefox releases.
+- Add requirements.txt and update README.txt to use it
+  [MrTango]
+
+- Make cleanup hook windows friendly.
+  [gforcada]
+
+- Move LICENSE.rst out of docs folder into top level.
+  [gforcada]
+
+- Get rid of the last two code violations on generated package
+  [sneridagh]
+
+1.0.5 (2016-10-16)
+------------------
+
+- Use same lines width than package name for title ##
+  [AuroreMariscal]
+
+- Get rid of ``travis.cfg`` configuration as its use is no longer considered best practice.
+  [hvelarde]
+
+- Update ``bootstrap-buildout.py`` to latest version.
+  [hvelarde]
+
+- Fix imports to follow conventions.
+  [hvelarde]
+
+- Avoid usage of double quotes on strings.
+  [hvelarde]
+
+- Avoid usage of invokeFactory.
+  [hvelarde]
+
+- Remove dependency on unittest2 as package is not intended to be compatible with Python 2.6.
+  [hvelarde]
+
+- Use selenium v2.53.6.
+  [hvelarde]
+
+- Use plone:static instead of browser:resourceDirectory to allow ttw-overrrides.
+  [pbauer]
+
+- Bump flake8 version to 3.x.
+  [gforcada]
+
+- Update theme template, include complete working Barceloneta resources + grunt setup
+  [MrTango]
+
+
+1.0.4 (2016-07-23)
+------------------
+
+- Upgrade some pinns.
+  [pbauer]
+
+- Upgrade to 5.0.5 and test against that.
+  [pbauer]
+
+- Add ``i18n:attributes`` for action nodes in FTI profile.
   [thet]
 
+- Pin versions of coverage/createcoverage
+  [staeff]
+
+- Default to Plone 5.0.4.
+  [jensens]
+
+- Validate type name input (fixes #81).
+  [pbauer]
+
+- Git ignore ``.installed.cfg`` and ``mr.developer.cfg`` by default.
+  [jensens]
+
+- ``isort`` style checks are enabled, but no config was set. i
+  Added config according to http://docs.plone.org/develop/styleguide/python.html#grouping-and-sorting
+  [jensens]
+
+- Ordered sections of generated FTI xml into semantical block and added comments for each block.
+  [jensens]
+
+- Bump setuptools version to 21.0.0 in buildout.cfg.bob
+  [staeff]
+
+- Configure buildout to install all recommended codeanalysis plugins
+  [staeff]
+
+
+1.0.3 (2016-04-13)
+------------------
+
+- Fix Plone default version (Plone 4.3.9).
+  [timo]
+
+
+1.0.2 (2016-04-13)
+------------------
+
+- Create uninstall profile also for Plone 4.3.x, since it already depends on ``Products.CMFQuickInstallerTool >= 3.0.9``.
+  [thet]
+
+- Update Plone versions to 4.3.9 and 5.0.4.
+  [thet]
+
+- Update robot test framework versions including Selenium to work with recent firefox releases.
+  [thet]
+
+- Replaced import steps by post_handlers.  Needs GenericSetup 1.8.2 or
+  higher.  This is included by default in Plone 4.3.8 and 5.0.3 but
+  should be fine to use on older Plone versions.  [maurits]
+
+- Removed ``.*`` from the ``.gitignore`` file.  This would ignore the
+  ``.gitkeep`` files, which would mean some directories are not added
+  when you do ``git add`` after generating a new project.  [maurits]
+
+- Note about disabled ``z3c.autoinclude`` in test layer setup.
+  [thet]
+
+- Remove the ``xmlns:five`` namespace, as it is not used at all.
+  [thet]
+
+- Fix build failure on Plone 4.x due to plone.app.contenttypes pulled in and having a plone.app.locales >= 4.3.9 dependency in it's depending packages.
+  [thet]
+
+- Declare the xml encoding for all GenericSetup profile files.
+  Otherwise the parser has to autodetect it.
+  Also add an xml version and encoding declaration to ``theme.xml``.
+  [thet]
+
+- Add "(uninstall)" to the uninstall profile title.
+  Otherwise it cannot be distinguished from the install profile in portal_setup.
+  [thet]
+
+- Simplify concatenation of ``.rst`` files for ``setup.py``.
+  [thet]
+
+- Update ``.gitignores`` in repository to exclude ``lib64``, ``pip-selfcheck.json`` and all ``.*`` except necessary.
+  Update ``.gitignore.bob`` in templates with these changes too.
+  Add ``.gitattributes`` in repository for union-merge CHANGES.rst files.
+  [thet]
+
+- Update docs and README
+  [svx]
 
 1.0.1 (2015-12-12)
 ------------------
@@ -38,6 +176,10 @@ Changelog
 
 - Enabled robot part in generated package.
   [maurits]
+
+- Add depedency on plone.testing 5.0.0. Despite the major version number,
+  this change does not contain breaking changes.
+  [do3cc]
 
 - Fix #84 Make travis cache the egg directory of the generated package.
   [jensens]

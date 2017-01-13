@@ -1,6 +1,5 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five"
 {{% if package.type == 'Theme' %}}
     xmlns:plone="http://namespaces.plone.org/plone"
 {{% endif %}}
@@ -18,44 +17,51 @@
   <plone:static
       directory="theme"
       type="theme"
-      name="{{{ package.dottedname }}}"
+      name="{{{ theme.normalized_name }}}"
+      />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="Plone Theme: {{{ theme.name }}}"
+      directory="profiles/default"
+      description="Installs the Plone theme package {{{ package.dottedname }}}."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      post_handler=".setuphandlers.post_install"
+      />
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="Uninstall: Plone Theme: {{{ theme.name }}}"
+      directory="profiles/uninstall"
+      description="Uninstalls the Plone theme package {{{ package.dottedname }}}."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      post_handler=".setuphandlers.uninstall"
       />
 {{% endif %}}
 
+{{% if package.type != 'Theme' %}}
   <genericsetup:registerProfile
       name="default"
       title="{{{ package.dottedname }}}"
       directory="profiles/default"
       description="Installs the {{{ package.dottedname }}} add-on."
       provides="Products.GenericSetup.interfaces.EXTENSION"
+      post_handler=".setuphandlers.post_install"
       />
 
-  <genericsetup:importStep
-      name="{{{ package.dottedname }}}-postInstall"
-      title="{{{ package.dottedname }}} post_install import step"
-      description="Post install import step from {{{ package.dottedname }}}"
-      handler=".setuphandlers.post_install">
-  </genericsetup:importStep>
-
-{{% if plone.is_plone5 %}}
   <genericsetup:registerProfile
       name="uninstall"
-      title="{{{ package.dottedname }}}"
+      title="{{{ package.dottedname }}} (uninstall)"
       directory="profiles/uninstall"
       description="Uninstalls the {{{ package.dottedname }}} add-on."
       provides="Products.GenericSetup.interfaces.EXTENSION"
+      post_handler=".setuphandlers.uninstall"
       />
 
-  <genericsetup:importStep
-      name="{{{ package.dottedname }}}-uninstall"
-      title="{{{ package.dottedname }}} uninstall import step"
-      description="Import step run during ininstalling {{{ package.dottedname }}}"
-      handler=".setuphandlers.uninstall">
-  </genericsetup:importStep>
+{{% endif %}}
 
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="{{{ package.dottedname }}}-hiddenprofiles" />
 
-{{% endif %}}
 </configure>

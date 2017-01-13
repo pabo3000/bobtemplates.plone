@@ -1,14 +1,22 @@
 [buildout]
 extends = http://dist.plone.org/release/{{{ plone.version }}}/versions.cfg
-extensions = mr.developer
+show-picked-versions = true
+extensions =
+    mr.developer
+
 parts =
     instance
     test
     code-analysis
+    createcoverage
     releaser
     i18ndude
     omelette
     robot
+{{% if package.type == 'Theme' %}}
+    npm-install
+    grunt-compile
+{{% endif %}}
 develop = .
 
 
@@ -23,14 +31,16 @@ eggs =
 
 
 [code-analysis]
-recipe = plone.recipe.codeanalysis
+recipe = plone.recipe.codeanalysis[recommended]
 directory = ${buildout:directory}/src/{{{ package.namespace }}}
 flake8-exclude = bootstrap.py,bootstrap-buildout.py,docs,*.egg.,omelette
 flake8-max-complexity = 15
-flake8-extensions =
-    flake8-blind-except
-    flake8-debugger
-    flake8-coding
+return-status-codes = True
+
+
+[createcoverage]
+recipe = zc.recipe.egg
+eggs = createcoverage
 
 
 [omelette]
@@ -60,18 +70,49 @@ eggs = zest.releaser
 recipe = zc.recipe.egg
 eggs = i18ndude
 
+{{% if package.type == 'Theme' %}}
+
+[npm-install]
+recipe = plone.recipe.command
+command = cd ${buildout:directory}; npm install .; cd ${buildout:directory}/src/{{{ package.namespace }}}/{{{ package.name}}}/theme; npm install .
+
+[grunt-compile]
+recipe = plone.recipe.command
+command = cd ${buildout:directory}; grunt compile
+update-command = cd ${buildout:directory}; grunt compile
+
+{{% endif %}}
 
 [versions]
 # Don't use a released version of {{{ package.dottedname }}}
 {{{ package.dottedname }}} =
 
-setuptools = 18.1
-zc.buildout = 2.4.1
-zc.recipe.egg = 2.0.2
-flake8 = 2.3.0
-i18ndude = 3.4.0
+setuptools = 24.3.0
+zc.buildout = 2.5.3
+zc.recipe.egg = 2.0.3
+check-manifest = 0.31
+flake8 = 2.5.4
+flake8-blind-except = 0.1.0
+flake8-coding = 1.1.1
+flake8-debugger = 1.4.0
+flake8-deprecated = 0.2
+flake8-isort = 1.1.1
+flake8-pep3101 = 0.4
+flake8-plone-hasattr = 0.1
+flake8-print = 2.0.1
+flake8-quotes = 0.1.2
+flake8-string-format = 0.2.1
+flake8-todo = 0.4
+i18ndude = 4.0.1
+isort = 4.2.2
+mccabe = 0.4.0
+pep8 = 1.7.0
+plone.recipe.codeanalysis = 2.2
+pyflakes = 1.0.0
 robotframework = 3.0
-robotframework-ride = 1.5
+robotframework-ride = 1.5.2.1
 robotframework-selenium2library = 1.7.4
 robotsuite = 1.7.0
-selenium = 2.48.0
+selenium = 2.53.6
+plone.testing = 5.0.0
+coverage = 4.2

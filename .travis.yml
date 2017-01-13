@@ -1,6 +1,10 @@
 language: python
 python: 2.7
 sudo: false
+addons:
+  apt:
+    packages:
+    - npm
 cache:
   pip: true
   directories:
@@ -13,22 +17,26 @@ before_install:
   - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
   - virtualenv .
   - bin/pip install --upgrade pip setuptools zc.buildout
+  - if [[ `npm -v` != 3.10.7 ]]; then npm i -g npm@3.10.7; fi
+  - npm install -g grunt-cli
 install:
   - bin/buildout -N -t 3 -c travis.cfg
 
 env:
   matrix:
-    - PLONE_VERSION=4.3.7 PACKAGE_TYPE=Basic
-    - PLONE_VERSION=4.3.7 PACKAGE_TYPE=Dexterity
-    - PLONE_VERSION=4.3.7 PACKAGE_TYPE=Theme
-    - PLONE_VERSION=5.0 PACKAGE_TYPE=Basic
-    - PLONE_VERSION=5.0 PACKAGE_TYPE=Dexterity
-    - PLONE_VERSION=5.0 PACKAGE_TYPE=Theme
+    - PLONE_VERSION=       PACKAGE_TYPE=
+    - PLONE_VERSION=4.3.11 PACKAGE_TYPE=Basic
+    - PLONE_VERSION=4.3.11 PACKAGE_TYPE=Dexterity
+    - PLONE_VERSION=4.3.11 PACKAGE_TYPE=Theme
+    - PLONE_VERSION=5.0.6  PACKAGE_TYPE=Basic
+    - PLONE_VERSION=5.0.6  PACKAGE_TYPE=Dexterity
+    - PLONE_VERSION=5.0.6  PACKAGE_TYPE=Theme
 
 install:
   - pip install docutils
   - sed -ie "s/^plone.version.*/plone.version = $PLONE_VERSION/g" test_answers.ini
   - sed -ie "s/^package.type.*/package.type = $PACKAGE_TYPE/g" test_answers.ini
+  - if [[ "$PLONE_VERSION" == "" && "$PACKAGE_TYPE" == "" ]]; then sed -ie "s/^plone.version.*//g" test_answers.ini; sed -ie "s/^package.type.*//g" test_answers.ini; fi
   - if [ "$PACKAGE_TYPE" == "Dexterity" ]; then echo "package.dexterity_type_name = MyDexterityTestType" >> test_answers.ini; fi
   - bin/buildout -c travis.cfg
 
@@ -41,6 +49,9 @@ script:
   - bin/code-analysis
   - bin/test
   - bin/test-plone_addon
+
+after_script:
+  - sh -e /etc/init.d/xvfb stop
 
 after_success:
   - bin/createcoverage

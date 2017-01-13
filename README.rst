@@ -1,5 +1,3 @@
-Introduction
-============
 
 .. image:: https://secure.travis-ci.org/plone/bobtemplates.plone.png?branch=master
     :target: http://travis-ci.org/plone/bobtemplates.plone
@@ -24,52 +22,22 @@ Introduction
     :target: https://pypi.python.org/pypi/bobtemplates.plone/
     :alt: License
 
-``bobtemplates.plone`` provides a `mr.bob`_ template to generate packages for Plone projects.
+bobtemplates.plone
+==================
 
-To create a package like ``collective.myaddon``::
-
-    $ pip install bobtemplates.plone
-    $ mrbob -O collective.myaddon bobtemplates:plone_addon
-
-You can also create a package with nested namespace::
-
-    $ mrbob -O collective.foo.myaddon bobtemplates:plone_addon
-
-
-Options
-=======
-
-On creating a package you can choose from the following options. The default value is in [square brackets]:
-
-Package Type? [Basic]
-    Options are Basic, Dexterity and Theme.
-
-Author's name
-    Should be something like 'John Smith'.
-
-Author's email
-    Should be something like 'john@plone.org'.
-
-Author's github username
-    Should be something like 'john'.
-
-Package description [An add-on for Plone]
-    One-liner describing what this package does. Should be something like 'Plone add-on that ...'.
-
-Plone version [4.3.7]
-    Which Plone version would you like to use?
+``bobtemplates.plone`` provides a `mr.bob <http://mrbob.readthedocs.org/en/latest/>`_ template to generate packages for Plone projects.
 
 
 Features
-========
+--------
 
-Package created with ``bobtemplates.plone`` use the current best-practices when creating an addon.
+Package created with ``bobtemplates.plone`` use the current best-practices when creating an add-on.
 
 Buildout
     The package is contained in a buildout that allows you to build Plone with the new package installed for testing-purposes.
 
 Tests
-    The package comes with a test setup and some `tests <http://docs.plone.org/external/plone.app.testing/docs/source/index.html>`_ for installing the package. It also contains a `robot-test <http://docs.plone.org/external/plone.app.robotframework/docs/source/index.html>`_ that tests logging in. The buildout also contains a config to allow testing the package on `travis <http://travis-ci.org/>`_ that sends `notifications <http://about.travis-ci.org/docs/user/notifications>`_ by email to the package autor.
+    The package comes with a test setup and some `tests <http://docs.plone.org/external/plone.app.testing/docs/source/index.html>`_ for installing the package. It also contains a `robot-test <http://docs.plone.org/external/plone.app.robotframework/docs/source/index.html>`_ that tests logging in. The buildout also contains a config to allow testing the package on `travis <http://travis-ci.org/>`_ that sends `notifications <http://about.travis-ci.org/docs/user/notifications>`_ by email to the package author.
 
 Profile
     The package contains a `Generic Setup Profile <http://docs.plone.org/develop/addons/components/genericsetup.html>`_ that installs a browserlayer. For Plone 5 it also contains a uninstall-profile.
@@ -89,22 +57,29 @@ Dexterity
     Adds a simple content-type (you get asked about its name) in ``profiles/default/types/`` with a python-schema in ``interfaces.py``.
 
 Theme
-    Adds a simple bootstrap-based Diazo theme in the folder ``theme/`` and registers it in ``profiles/default/theme.xml``
+    Adds the Default Plone 5 theme Barceloneta in the folder ``theme/`` and registers it in ``profiles/default/theme.xml``
 
 
 Compatibility
 =============
 
-Addons created with ``bobtemplates.plone`` are tested to work in Plone 4.3.x and Plone 5.
+Add-ons created with ``bobtemplates.plone`` are tested to work in Plone 4.3.x and Plone 5.
 They should also work with older versions but that was not tested.
 It should work on Linux, Mac and Windows.
 
 
+Documentation
+-------------
+
+Full documentation for end users can be found in the "docs" folder.
+
+It is also available online at http://docs.plone.org/develop/addons/bobtemplates.plone/bobtemplates.plone/README.html
+
 Installation
-============
+------------
 
 Use in a buildout
------------------
+^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -118,14 +93,14 @@ Use in a buildout
         bobtemplates.plone
 
 
-This creates a mrbob-executeable in your bin-directory.
+This creates a mrbob-executable in your bin-directory.
 Call it from the ``src``-directory of your Plone project like this.::
 
     $ ../bin/mrbob -O collective.foo bobtemplates:plone_addon
 
 
 Installation in a virtualenv
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can also install ``bobtemplates.plone`` in a virtualenv.::
 
@@ -139,6 +114,35 @@ Now you can use it like this::
 
     $ mrbob -O collective.foo bobtemplates:plone_addon
 
-See `mr.bob`_ documentation for further information.
+This will create a new folder collective.foo.
+Inside the folder you have usually a buildout setup, which you can initialize as follow::
 
-.. _`mr.bob`: http://mrbob.readthedocs.org/en/latest/
+    $ pip install -r requirements.txt
+
+if you don't see any requirements.txt, add this file with the following content before you run the pip command above::
+
+    setuptools == 24.3.0
+    zc.buildout == 2.5.3
+
+Now run::
+
+    $ buildout bootstrap
+
+Your buildout should be ready to use now.
+
+
+See `the documentation of mr.bob <http://mrbob.readthedocs.org/en/latest/>`_  for further information.
+
+
+Contribute
+----------
+
+- Issue Tracker: https://github.com/plone/bobtemplates.plone/issues
+- Source Code: https://github.com/plone/bobtemplates.plone
+- Documentation: http://docs.plone.org/develop/addons/bobtemplates.plone/bobtemplates.plone/README.html
+
+
+Support
+-------
+
+If you are having issues, please let us know.

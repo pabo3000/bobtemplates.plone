@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 """Render bobtemplates.plone hooks.
 """
+from datetime import date
 from mrbob.bobexceptions import SkipQuestion
 from mrbob.bobexceptions import ValidationError
 from mrbob.hooks import validate_choices
 
+import keyword
 import os
+import re
 import shutil
 import string
 import subprocess
@@ -120,6 +123,7 @@ def post_ask(configurator):
 
     This is called after all questions have been asked.
     """
+    configurator.variables['year'] = date.today().year
     version = configurator.variables.get('plone.version')
     if not version:
         return
@@ -139,6 +143,42 @@ def post_type(configurator, question, answer):
 def pre_dexterity_type_name(configurator, question):
     if configurator.variables['package.type'] != 'Dexterity':
         raise SkipQuestion
+
+
+def post_dexterity_type_name(configurator, question, answer):
+    if keyword.iskeyword(answer):
+        raise ValidationError('%s is a reserved keyword' % answer)
+    if not re.match('[_A-Za-z][_a-zA-Z0-9_]*$', answer):
+        raise ValidationError('%s is not a valid identifier' % answer)
+    return answer
+
+
+def pre_theme_name(configurator, question):
+    validate_packagename(configurator)
+
+    if configurator.variables['package.type'] != 'Theme':
+        raise SkipQuestion
+
+    default = os.path.basename(
+        configurator.target_directory).split('.')[-1].capitalize()
+    if default:
+        question.default = default
+
+
+def validate_themename(configurator):
+    fail = False
+
+    allowed = set(string.ascii_letters + string.digits + '.-_')
+    if not set(configurator.varibles['theme.name']).issubset(allowed):
+        fail = True
+
+    if fail:
+        msg = "Error: '{0}' is not a valid themename.\n".format(
+            configurator.variables["theme.name"])
+        msg += "Please use a valid name (like 'Tango' or 'my-tango.com')!\n"
+        msg += "No '.' at beginning or end of the name and "
+        msg += "only letters, digits and '.-_' are allowed."
+        sys.exit(msg)
 
 
 def prepare_render(configurator):
@@ -213,6 +253,13 @@ def prepare_render(configurator):
         configurator.variables['package.dexterity_type_name'] = ''
         configurator.variables['package.dexterity_type_name_lower'] = ''
 
+    if configurator.variables.get('theme.name'):
+        configurator.variables[
+            "theme.normalized_name"] = configurator.variables.get(
+                'theme.name').replace(" ", "-").strip('.').lower()
+    else:
+        configurator.variables["theme.normalized_name"] = ""
+
 
 def cleanup_package(configurator):
     """Cleanup and make nested if needed.
@@ -224,12 +271,13 @@ def cleanup_package(configurator):
     nested = configurator.variables['package.nested']
 
     # construct full path '.../src/collective'
-    start_path = "{0}/src/{1}".format(
+    start_path = make_path(
         configurator.target_directory,
+        'src',
         configurator.variables['package.namespace'])
 
     # path for normal packages: '.../src/collective/myaddon'
-    base_path = "{0}/{1}".format(
+    base_path = make_path(
         start_path,
         configurator.variables['package.name'])
 
@@ -243,13 +291,13 @@ def cleanup_package(configurator):
         # a __init__.py into it.
 
         # full path for nested packages: '.../src/collective/behavior/myaddon'
-        base_path_nested = "{0}/{1}/{2}".format(
+        base_path_nested = make_path(
             start_path,
             configurator.variables['package.namespace2'],
             configurator.variables['package.name'])
 
         # directory to be created: .../src/collective/behavior
-        newpath = "{0}/{1}".format(
+        newpath = make_path(
             start_path,
             configurator.variables['package.namespace2'])
         if not os.path.exists(newpath):
@@ -258,7 +306,8 @@ def cleanup_package(configurator):
 
         # copy .../src/collective/__init__.py to
         # .../src/collective/myaddon/__init__.py
-        shutil.copy2("{0}/__init__.py".format(start_path), newpath)
+        init = make_path(start_path, '__init__.py')
+        shutil.copy2(init, newpath)
 
         # move .../src/collective/myaddon to .../src/collective/behavior
         shutil.move(base_path, base_path_nested)
@@ -271,29 +320,36 @@ def cleanup_package(configurator):
 
     if configurator.variables['package.type'] != u'Theme':
         to_delete.extend([
-            "{0}/theme",
-            "{0}/profiles/default/theme.xml",
-            "{0}/profiles/uninstall/theme.xml",
+            make_path(base_path, "theme"),
+            make_path(base_path, "profiles", "default", "theme.xml"),
+            make_path(base_path, "profiles", "uninstall", "theme.xml"),
+            make_path(configurator.target_directory, "Gruntfile.js"),
+            make_path(configurator.target_directory, "package.json"),
         ])
 
     if configurator.variables['package.type'] != u'Dexterity':
         to_delete.extend([
-            "{0}/profiles/default/types.xml",
-            "{0}/profiles/default/types",
-            "{0}/tests/test_.py",
-            "{0}/tests/robot/test_.robot",
-        ])
-
-    if not configurator.variables['plone.is_plone5']:
-        to_delete.extend([
-            "{0}/profiles/uninstall",
+            make_path(base_path, "profiles", "default", "types.xml"),
+            make_path(base_path, "profiles", "default", "types"),
+            make_path(base_path, "tests", "test_.py"),
+            make_path(base_path, "tests", "robot", "test_.robot"),
         ])
 
     # remove parts
     for path in to_delete:
-        path = path.format(base_path)
         if os.path.exists(path):
             if os.path.isdir(path):
                 shutil.rmtree(path)
             else:
                 os.remove(path)
+
+    if configurator.variables['package.type'] == u'Theme':
+        # make a copy of the HOWTO_DEVELOP.rst also in the package root
+        shutil.copy2(
+            make_path(base_path, "theme", "HOWTO_DEVELOP.rst",),
+            make_path(configurator.target_directory, "HOWTO_DEVELOP.rst"),
+        )
+
+
+def make_path(*args):
+    return os.sep.join(args)

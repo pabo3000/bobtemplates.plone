@@ -3,15 +3,15 @@
 from setuptools import find_packages
 from setuptools import setup
 
-version = '1.0.2.dev0'
+version = '1.0.6.dev0'
 
-long_description = (
-    open('README.rst').read() + '\n' +
-    'Contributors\n'
-    '============\n' + '\n' +
-    open('CONTRIBUTORS.rst').read() + '\n' +
-    open('CHANGES.rst').read() + '\n'
-)
+
+long_description = '\n\n'.join([
+    open('README.rst').read(),
+    open('CONTRIBUTORS.rst').read(),
+    open('CHANGES.rst').read(),
+])
+
 
 setup(
     name='bobtemplates.plone',
